@@ -1,7 +1,6 @@
 <template>
   <!-- 首页广告管理 -->
   <div class="indexAdManage">
-      <el-button type="primary" class="news" @click="toEditor('NEW')">添加新商品</el-button>
     <!-- 查询工具 -->
     <div class="toolkits">
       <el-form :inline="true">
@@ -82,11 +81,7 @@
       </el-table-column>
       <el-table-column label="操作" width="350" align='center'>
         <template slot-scope="scope">
-          <el-button type="primary" plain @click="toEditor('CHANGE',scope.row.shop_id)">编辑</el-button>
-          <el-popconfirm confirmButtonText='好的' cancelButtonText='不用了' icon="el-icon-info" iconColor="red"
-            title="确定删除吗(不显示)？" @onConfirm='deleteshops(scope.row.shop_id)'>
-            <el-button type="danger" plain slot="reference" style="margin-left:20px">删除</el-button>
-          </el-popconfirm>
+          <el-button type="primary" plain @click="toEditor(scope.row.shop_id)">配置商品组合/更改库存</el-button>
         </template>
       </el-table-column>
     </ftable>
@@ -117,8 +112,6 @@
         count: 0,
         pageCount: 1,
         loading: true,
-        brandList:[],
-        sortList:[],
         imgs:[]
       }
     },
@@ -222,10 +215,8 @@
               })
           })
       },
-        toEditor(type,id){
-        this.$router.push({name:'shopEditor',query:{id,id,type:type}})
-        let tagName = this.current
-    this.close({tagName});
+        toEditor(id){
+        this.$router.push({name:'skuconcat',query:{id:id}})
       },
       ...mapActions('d2admin/account', [
         'logout'

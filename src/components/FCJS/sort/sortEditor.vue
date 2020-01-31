@@ -25,6 +25,7 @@
 
 <script>
   import {getsortbyid,updatesort,addsort} from '@/api/api'
+    import { mapState, mapActions } from 'vuex'
   export default {
     data() {
       return {
@@ -77,6 +78,8 @@
                    type: 'success'
                  })
                  this.$router.push({name: 'sortManage'})
+                 let tagName = this.current
+    this.close({tagName});
              } else {
                  this.$message({
                    message: '添加失败',
@@ -85,6 +88,9 @@
              }
          })
       },
+            ...mapActions('d2admin/page', [
+		  'close',
+		]),
       change(){
           const res={
             sortid: this.form.sortid,
@@ -100,6 +106,8 @@
                    type: 'success'
                  })
                  this.$router.push({name: 'sortManage'})
+                 let tagName = this.current
+    this.close({tagName});
              } else {
                  this.$message({
                    message: '修改失败',

@@ -44,3 +44,10 @@ export const getshopbyid = data=> post('/api/shop/GETSHOPBYID',data)
 export const deleteshop = data => post('/api/shop/DELETESHOP',data)
 export const updateshop = data => post('/api/shop/UPDATESHOP',data)
 export const addshop = data => post('/api/shop/ADDSHOP',data)
+
+// sku属性相关
+export const getskustock = data=> post('/api/stock/GETSTOCK',data)
+export const getskubyid = data=> post('/api/stock/GETSTOCKBYID',data)
+export const deletesku = data => post('/api/stock/DELETESTOCK',data)
+export const updatesku = data => post('/api/stock/UPDATESTOCK',data)
+export const addsku = data => post('/api/stock/ADDSTOCK',data)

@@ -21,7 +21,7 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item label="对应商品">
-        <el-input placeholder="点击选择商品" style="width:350px;" v-model="shopname"></el-input>
+        <el-input placeholder="点击选择商品" @focus="openshop" style="width:350px;" v-model="shopname"></el-input>
       </el-form-item>
       <el-form-item label="广告描述">
         <el-input placeholder="输入商品描述" style="width:350px;" v-model="form.shopres"></el-input>
@@ -32,11 +32,14 @@
          <el-button type="danger">取消</el-button>
       </el-form-item>
     </el-form>
+    <shopChoose ref="shopchoose" @shop='changeshop'/>
   </div>
 </template>
 
 <script>
+  import { mapState, mapActions } from 'vuex'
   import {getaad,updatead,addad} from '@/api/api'
+  import shopChoose from '../shop/shopChoose'
   export default {
     data() {
       return {
@@ -57,7 +60,18 @@
           this.getad({id:this.$route.query.id})
       }
     },
+    components:{
+      shopChoose
+    },
     methods: {
+      changeshop(data){
+        this.form.shopid =data.shopid
+        this.shopname = data.shopname 
+      },
+      openshop(){
+        console.log(111);
+        this.$refs.shopchoose.open()
+      },
       getad(res){
         getaad(res)
         .then(b => {
@@ -85,6 +99,9 @@
             })
         })
       },
+            ...mapActions('d2admin/page', [
+		  'close',
+		]),
       add(){
           const res={
             id: this.$route.query.id,
@@ -102,7 +119,10 @@
                    message: '添加成功',
                    type: 'success'
                  })
+
                  this.form.adid == 1 ? this.$router.push({name: 'indexAdManage'}) :  this.$router.push({name: 'shopRecomment'})
+                 let tagName = this.current
+    this.close({tagName});
              } else {
                  this.$message({
                    message: '添加失败',
@@ -129,6 +149,8 @@
                    type: 'success'
                  })
                  this.form.adid == 1 ? this.$router.push({name: 'indexAdManage'}) :  this.$router.push({name: 'shopRecomment'})
+                 let tagName = this.current
+    this.close({tagName});
              } else {
                  this.$message({
                    message: '修改失败',

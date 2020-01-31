@@ -116,6 +116,9 @@
     ])
   },
     methods: {
+            ...mapActions('d2admin/page', [
+		  'close',
+		]),
       getads() {
         this.loading = true
         const qdata = {
@@ -142,6 +145,8 @@
       },
       toEditor(type,id){
         this.$router.push({name:'adEditor',query:{id,id,type:type}})
+        let tagName = this.current
+    this.close({tagName});
       },
       ...mapActions('d2admin/account', [
         'logout'

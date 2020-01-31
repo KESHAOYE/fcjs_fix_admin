@@ -20,6 +20,7 @@
 
 <script>
   import {getspecbyid,updatespec,addspec} from '@/api/api'
+    import { mapState, mapActions } from 'vuex'
   export default {
     props:{
       type:{
@@ -64,6 +65,9 @@
             })
         })
       },
+      ...mapActions('d2admin/page', [
+		  'close',
+		  ]),
       add(){
           const res={
             specId: this.specId,
@@ -79,6 +83,8 @@
                  })
                  this.dialogFormVisible =false
                  this.$router.push({name: 'specManage'})
+                 let tagName = this.current
+    this.close({tagName});
              } else {
                  this.$message({
                    message: '添加失败',
@@ -103,6 +109,8 @@
                  })
                  this.dialogFormVisible =false
                  this.$router.push({name: 'specManage'})
+                 let tagName = this.current
+    this.close({tagName});
              } else {
                  this.$message({
                    message: '修改失败',

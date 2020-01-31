@@ -104,8 +104,13 @@
               })
           })
       },
+            ...mapActions('d2admin/page', [
+		  'close',
+		]),
       toEditor(type,id){
         this.$router.push({name:'sortEditor',query:{id,id,type:type}})
+        let tagName = this.current
+    this.close({tagName});
       },
       ...mapActions('d2admin/account', [
         'logout'

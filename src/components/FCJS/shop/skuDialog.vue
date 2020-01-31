@@ -1,6 +1,6 @@
 <template>
   <div class="adeditor">
-    <el-dialog title="添加规格(SKU/SPU)" :visible="dialogFormVisible">
+    <el-dialog title="添加规格(SKU/SPU)" :visible="dialogFormVisible" :before-close="close">
       <el-form>
         <el-form-item label="参数名">
           <el-select placeholder="参数名(如无选项请配置)" v-model="spec_id">
@@ -74,6 +74,9 @@
                 type: 'error'
               })
           })
+      },
+      close(){
+        this.dialogFormVisible = false
       },
       add() {
         let index = this.specList.findIndex((el) => {

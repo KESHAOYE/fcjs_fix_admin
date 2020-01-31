@@ -3,7 +3,7 @@
     <el-form>
       <div class="photo">
       <template v-for="(sl,index) in form.shopimg" v-if="form.shopimg.length > 0">
-        <img :src="sl" class="avatar" @click="deleteimg(index)">
+        <img :src="sl.path" :value='sl.imgid' class="avatar" @click="deleteimg(index)">
       </template>
       <el-form-item>
         <el-upload class="avatar-uploader" action="https://jsonplaceholder.typicode.com/posts/" :show-file-list="false"
@@ -41,19 +41,19 @@
         <el-input placeholder="请输入新旧成色(例:9.5 九五新)"></el-input>
       </el-form-item>
       <el-form-item label="配置SPU(商品固定参数)">
-         <el-tag closable v-for="(el,index) in form.spu" :key="index" v-if="form.spu.length>0">{{el.spec_name}}:{{el.spec_value}}</el-tag>
-         <i class="el-icon-plus addspec" @click="addspec('SPU')"></i>
+         <el-tag closable v-for="(el,index) in form.spu" :key="index" v-if="form.spu.length>0" @close="handleClose('SPU',el.spec_id)">{{el.spec_name}}:{{el.spec_value}}</el-tag>
+         <i class="el-icon-plus addspec" @click="addspec('SPU')" @close="handleClose(el)"></i>
       </el-form-item>
       <el-form-item label="配置SKU(商品参数)">
-           <el-tag closable v-for="(el,index) in form.sku" :key="index" v-if="form.sku.length>0">{{el.spec_name}}:{{el.spec_value}},加价:{{el.price}}</el-tag>
+           <el-tag closable v-for="(el,index) in form.sku" :key="index" @close="handleClose('SKU',el.spec_id)" v-if="form.sku.length>0">{{el.spec_name}}:{{el.spec_value}},加价:{{el.price}}</el-tag>
          <i class="el-icon-plus addspec" @click="addspec('SKU')"></i>
       </el-form-item>
       <el-form-item label="商品详情">
-         <!-- <d2-ueditor v-model="form.shopdes"></d2-ueditor> -->
+         <d2-ueditor v-model="form.shopdetail"></d2-ueditor>
       </el-form-item>
       <el-form-item align='center'>
-        <el-button type="primary" size='medium' v-if="type!='NEW'" @click='change'>更改</el-button>
-        <el-button type="primary" size='medium' v-if="type=='NEW'" @click="add">添加</el-button>
+        <el-button type="primary" size='medium' v-if="type!='NEW'" @click='change' v-loading.fullscreen.lock="fullscreenLoading">更改</el-button>
+        <el-button type="primary" size='medium' v-if="type=='NEW'" @click="add" v-loading.fullscreen.lock="fullscreenLoading">添加</el-button>
         <el-button type="danger">取消</el-button>
       </el-form-item>
     </el-form>
@@ -69,6 +69,7 @@
     getsort,
     getbrand
   } from '@/api/api'
+    import { mapState, mapActions } from 'vuex'
   import skuDialog from './skuDialog'
   export default {
     name:'shopEditor',
@@ -90,7 +91,8 @@
         brandList:[],
         sortList:[],
         type:'NEW',
-        sort: 'SKU'
+        sort: 'SKU',
+        fullscreenLoading: false
       }
     },
     components:{
@@ -124,8 +126,12 @@
               })
           })
       },
+            ...mapActions('d2admin/page', [
+		  'close',
+		]),
       dealadd(data){
         if(data.type == 'SPU'){
+          console.log(data.info.spec_id);
             if(this.form.spu.findIndex(el=>{
                 return el.spec_id == data.info.spec_id
             })!=-1){
@@ -161,6 +167,18 @@
             }
         }
       },
+      handleClose(type,id){
+        let index = type == 'SPU' ? this.form.spu.forEach(el=>{
+          return el.spec_id == id
+        }) : this.form.sku.forEach(el=>{
+          return el.spec_id == id
+        })
+        if(type == 'SPU'){
+          this.form.spu.splice(index,1)
+        }else{
+          this.form.sku.splice(index,1)
+        }
+      },
       getbrands() {
         const qdata = {
           brandname: '',
@@ -182,15 +200,35 @@
       getshop(res) {
         getshopbyid(res)
           .then(b => {
-            let data = b.info
+            let data = b.info[0]
+            let sku = []
+            data.sku.forEach(el=>{
+              el.value.forEach(es=>{
+                let a = {
+                  spec_id: el.spec_id,
+                  spec_name: el.spec_name,
+                  price: es.price,
+                  sku_id :es.sku_id,
+                  spec_value: es.spec_value
+                }
+                sku.push(a)
+              }) 
+            })
             const a = {
-              shopid: data.shopid,
-              shopname: data.shopname,
-              shopename: data.shopename,
-              shopimg: data.shopimg,
-              isfix: data.isfix
+              shop_id: data.shop_id,
+              shopname: data.shopName,
+              shopimg: data.img,
+              isold: data.isold,
+              price: data.price,
+              sku:sku,
+              spu:data.spu,
+              shopdes: data.shopdes,
+              brandid: data.brandid,
+              sortid:data.sortid,
+              shopdetail: data.shopdetail
             }
             this.form = a
+            console.log(this.form)
           })
           .catch(err => {
             this.$message({
@@ -204,6 +242,7 @@
         this.$refs.skueditor.open()
       },
       add() {
+        this.fullscreenLoading = true
         const res = {
           shopname: this.form.shopname,
           shopimg: this.form.shopimg,
@@ -224,9 +263,12 @@
               message: '添加成功',
               type: 'success'
             })
+            this.fullscreenLoading = false
             this.$router.push({
               name: 'shopManage'
             })
+            let tagName = this.current
+    this.close({tagName});
           } else {
             this.$message({
               message: '添加失败',
@@ -236,13 +278,25 @@
         })
       },
       change() {
+        this.$confirm('更改商品信息将会清空库存,是否继续?', '警告', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.fullscreenLoading = true
         const res = {
-          id: this.$route.query.id,
-          shopid: this.form.shopid,
+          shop_id:this.form.shop_id,
           shopname: this.form.shopname,
-          shopename: this.form.shopename,
           shopimg: this.form.shopimg,
-          isfix: this.form.isfix
+          isold: this.form.isold,
+          oldtype:this.form.oldtype,
+          sku: this.form.sku,
+          spu: this.form.spu,
+          shopdes: this.form.shopdes,
+          brandid: this.form.brandid,
+          sortid: this.form.sortid,
+          price: this.form.price,
+          shopdetail: this.form.shopdetail
         }
         updateshop(res).
         then(data => {
@@ -251,15 +305,19 @@
               message: '修改成功',
               type: 'success'
             })
+            this.fullscreenLoading = false
             this.$router.push({
               name: 'shopManage'
             })
+            let tagName = this.current
+    this.close({tagName});
           } else {
             this.$message({
               message: '修改失败',
               type: 'error'
             })
           }
+        })
         })
       },
       deleteimg(el){
@@ -291,7 +349,7 @@
           files.readAsDataURL(file)
           files.onload = e => {
             let imgFile = e.target.result;
-            this.form.shopimg.push(imgFile)
+            this.form.shopimg.push({imgid:'',path:imgFile})
           }
         }
         return isJPG && isLt2M;

@@ -1,7 +1,7 @@
 <template>
   <!-- 首页广告管理 -->
   <div class="indexAdManage">
-      <el-button type="primary" class="news" @click="toEditor('NEW')">添加新商品</el-button>
+    <el-dialog title="选择商品" :visible="dialogFormVisible" :before-close='close'>
     <!-- 查询工具 -->
     <div class="toolkits">
       <el-form :inline="true">
@@ -32,18 +32,6 @@
     <!-- 数据展示 -->
     <ftable v-loading='loading' :data='tableData' center :pageSize='pageSize' :total='count' :pageCount='pageCount'
       @current-change="handleCurrentChange" @size-change="handleSizeChange">
-       <el-table-column type="expand">
-          <template slot-scope="scope">
-             <span class="shopinfo">商品id ：{{scope.row.shop_id}}</span>
-             <span class="shopinfo">商品名称 ：{{scope.row.shopName}}</span>
-             <span class="shopinfo">商品品牌 ：{{scope.row.brandname}}</span>
-             <span class="shopinfo">商品分类 ：{{scope.row.sortname}}</span>
-             <span class="shopinfo" v-for="(el,index) in scope.row.spu" :key="'spu'+index">{{el.specName}} ：{{el.specValue}}</span>
-             <span class="shopinfo" v-for="(el,index) in scope.row.sku" :key="index">
-               {{el.specName}}: <span v-for="(els,indexs) in el.value" :key='indexs'>{{els.specValue}}&nbsp;&nbsp;</span>
-             </span>
-          </template>
-      </el-table-column>
       <el-table-column label='商品图片(点击查看所有图片)' align='center'>
         <template slot-scope="scope">
           <el-image :src='scope.row.img[0].path' alt="" style="width: 80px; height: 80px;"
@@ -53,11 +41,6 @@
       <el-table-column label="商品名称" align='center'>
         <template slot-scope="scope">
           {{scope.row.shopName}}
-        </template>
-      </el-table-column>
-      <el-table-column label="商品介绍" align='center'>
-        <template slot-scope="scope">
-          {{scope.row.shopdes}}
         </template>
       </el-table-column>
       <el-table-column label="商品品牌" align='center'>
@@ -80,16 +63,13 @@
           {{scope.row.oldtype|oldtype}}
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="350" align='center'>
-        <template slot-scope="scope">
-          <el-button type="primary" plain @click="toEditor('CHANGE',scope.row.shop_id)">编辑</el-button>
-          <el-popconfirm confirmButtonText='好的' cancelButtonText='不用了' icon="el-icon-info" iconColor="red"
-            title="确定删除吗(不显示)？" @onConfirm='deleteshops(scope.row.shop_id)'>
-            <el-button type="danger" plain slot="reference" style="margin-left:20px">删除</el-button>
-          </el-popconfirm>
+      <el-table-column label="操作" align='center'>
+          <template slot-scope="scope" >
+           <span style="cursor:pointer;color:#0084ff;" @click="choose(scope.row)">选择</span>
         </template>
       </el-table-column>
     </ftable>
+    </el-dialog>
   </div>
 </template>
 
@@ -119,7 +99,8 @@
         loading: true,
         brandList:[],
         sortList:[],
-        imgs:[]
+        imgs:[],
+        dialogFormVisible: false
       }
     },
     filters:{
@@ -146,6 +127,20 @@
     ])
   },
     methods: {
+        choose(row){
+          this.close();
+          console.log('object');
+          this.$emit('shop',{shopid: row.shop_id,shopname: row.shopName}) 
+        },
+       open(){
+         this.dialogFormVisible = true
+         this.getsorts();
+      this.getbrands();
+      this.getshops()
+      },
+      close(){
+          this.dialogFormVisible = false
+      },
       changeimg(scope){
         this.imgs = []
         this.$nextTick(()=>{
@@ -201,9 +196,6 @@
               })
           })
       },
-            ...mapActions('d2admin/page', [
-		  'close',
-		]),
        getbrands() {
         const qdata = {
           brandname: '',
@@ -222,41 +214,9 @@
               })
           })
       },
-        toEditor(type,id){
-        this.$router.push({name:'shopEditor',query:{id,id,type:type}})
-        let tagName = this.current
-    this.close({tagName});
-      },
       ...mapActions('d2admin/account', [
         'logout'
       ]),
-      deleteshops(id) {
-        this.loading = true
-        const qdata = {
-          shopid: id,
-        }
-        deleteshop(qdata)
-          .then(data => {
-            if (data.code == 200) {
-              this.$message({
-                message: data.message,
-                type: 'success'
-              })
-              this.getshops()
-            } else {
-              this.$message({
-                message: data.message,
-                type: 'error'
-              })
-              if (data.code == 601) {
-                this.logout({
-                  confirm: false
-                })
-              }
-              this.loading = false
-            }
-          })
-      },
       handleCurrentChange(el) {
         this.currentPage = el
         this.getshops()
@@ -267,9 +227,7 @@
       }
     },
     created() {
-      this.getsorts();
-      this.getbrands();
-      this.getshops()
+      
     }
   }
 

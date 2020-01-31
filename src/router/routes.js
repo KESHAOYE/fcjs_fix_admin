@@ -138,6 +138,26 @@ const frameIn = [
         },
         component: ()=>import('../components/FCJS/shop/shopEditor')
       },
+      {
+        path:'/storageManage',
+        name: 'storageManage',
+        meta: {
+          title: '库存管理',
+          auth: true,
+          cache: true
+        },
+        component: ()=>import('../components/FCJS/shop/stockManage')
+      },
+      {
+        path:'/skuconcat',
+        name: 'skuconcat',
+        meta: {
+          title: '库存管理',
+          auth: true,
+          cache: true
+        },
+        component: ()=>import('../components/FCJS/shop/skuconcat')
+      },
     ]
   }
 ]

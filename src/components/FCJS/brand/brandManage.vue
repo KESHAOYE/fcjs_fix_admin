@@ -106,6 +106,9 @@
     ])
   },
     methods: {
+            ...mapActions('d2admin/page', [
+		  'close',
+		]),
       getbrands() {
         this.loading = true
         const qdata = {
@@ -132,6 +135,8 @@
       },
       toEditor(type,id){
         this.$router.push({name:'brandEditor',query:{id,id,type:type}})
+        let tagName = this.current
+    this.close({tagName});
       },
       ...mapActions('d2admin/account', [
         'logout'

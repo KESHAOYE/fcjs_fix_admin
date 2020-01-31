@@ -18,6 +18,7 @@
               :page-size="pageSize"
               :layout="layout"
               :page-count="pageCount"
+              v-if="showpage"
               background
               style="background: white;
                border-top: 1px solid #f2f2f2;
@@ -44,6 +45,12 @@ export default {
     height: [String, Number],
     maxHeight: [String, Number],
     stripe: {
+      default() {
+        return true;
+      },
+      type: Boolean
+    },
+    showpage: {
       default() {
         return true;
       },

@@ -31,6 +31,7 @@
 
 <script>
   import {getbrandbyid,updatebrand,addbrand} from '@/api/api'
+    import { mapState, mapActions } from 'vuex'
   export default {
     data() {
       return {
@@ -70,6 +71,9 @@
             })
         })
       },
+            ...mapActions('d2admin/page', [
+		  'close',
+		]),
       add(){
           const res={
             id: this.$route.query.id,
@@ -87,6 +91,8 @@
                    type: 'success'
                  })
                  this.$router.push({name: 'brandManage'})
+                 let tagName = this.current
+    this.close({tagName});
              } else {
                  this.$message({
                    message: '添加失败',
@@ -112,6 +118,8 @@
                    type: 'success'
                  })
                  this.$router.push({name: 'brandManage'})
+                 let tagName = this.current
+    this.close({tagName});
              } else {
                  this.$message({
                    message: '修改失败',
