@@ -54,8 +54,8 @@
     },
     methods: {
       open() {
-        this.dialogFormVisible = true
         this.getspecs()
+        this.dialogFormVisible = true
       },
       getspecs() {
         this.loading = true

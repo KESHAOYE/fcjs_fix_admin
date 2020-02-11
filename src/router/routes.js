@@ -134,7 +134,6 @@ const frameIn = [
         meta: {
           title: '商品添加/编辑',
           auth: true,
-          cache: true
         },
         component: ()=>import('../components/FCJS/shop/shopEditor')
       },
@@ -158,6 +157,76 @@ const frameIn = [
         },
         component: ()=>import('../components/FCJS/shop/skuconcat')
       },
+      {
+        path:'/fixItemManage',
+        name: 'fixItemManage',
+        meta: {
+          title: '维修项目管理',
+          auth: true,
+          cache: true
+        },
+        component: ()=>import('../components/FCJS/fix/fixItemManage')
+      },
+      {
+        path:'/fixSortManage',
+        name: 'fixSortManage',
+        meta: {
+          title: '维修分类管理',
+          auth: true,
+          cache: true
+        },
+        component: ()=>import('../components/FCJS/fix/fixsortManage')
+      },
+      {
+        path:'/fixsortsEditor',
+        name: 'fixsortsEditor',
+        meta: {
+          title: '维修分类编辑',
+          auth: true,
+          cache: true
+        },
+        component: ()=>import('../components/FCJS/fix/fixsortEditor')
+      },
+      {
+        path:'/fixModelManage',
+        name: 'fixModelManage',
+        meta: {
+          title: '维修机型管理',
+          auth: true,
+          cache: true
+        },
+        component: ()=>import('../components/FCJS/fix/fixModelManage')
+      },
+      {
+        path:'/fixModelEditor',
+        name: 'fixModelEditor',
+        meta: {
+          title: '维修机型编辑',
+          auth: true,
+          cache: true
+        },
+        component: ()=>import('../components/FCJS/fix/fixModelEditor')
+      },
+      {
+        path:'/couponManage',
+        name: 'couponManage',
+        meta: {
+          title: '优惠券管理',
+          auth: true,
+          cache: true
+        },
+        component: ()=>import('../components/FCJS/coupon/couponManage')
+      },
+      {
+        path:'/couponEditor',
+        name: 'couponEditor',
+        meta: {
+          title: '优惠券编辑',
+          auth: true,
+          cache: true
+        },
+        component: ()=>import('../components/FCJS/coupon/couponEditor')
+      },
     ]
   }
 ]
@@ -171,7 +240,17 @@ const frameOut = [
     path: '/login',
     name: 'login',
     component: _import('system/login')
-  }
+  },
+  {
+    path:'/chat',
+    name: 'chat',
+    meta: {
+      title: '客服',
+      auth: true,
+      cache: true
+    },
+    component: ()=>import('../components/FCJS/chat')
+  },
 ]
 
 /**

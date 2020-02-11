@@ -38,6 +38,13 @@ server.interceptors.response.use(
                 return Promise.resolve(response)
             } else {
                 switch (response.data.code) {
+                    case 201:
+                            Message({
+                                message: "您不是管理员，无法登录此系统",
+                                type: "error",
+                                duration: "2500"
+                            })
+                            break;
                     //400：请求错误
                     case 400:
                         Message({
@@ -101,7 +108,7 @@ server.interceptors.response.use(
                         break;
                     default:
                         Message({
-                            message: "发生错误,请重试！" + error,
+                            message: "发生错误,请重试！",
                             type: "error",
                             duration: "2500"
                         })
@@ -169,6 +176,13 @@ server.interceptors.response.use(
                             })
                             Message({
                                 message: "您暂未登录!",
+                                type: "error",
+                                duration: "2500"
+                            })
+                            break;
+                        case 600:
+                            Message({
+                                message: error,
                                 type: "error",
                                 duration: "2500"
                             })

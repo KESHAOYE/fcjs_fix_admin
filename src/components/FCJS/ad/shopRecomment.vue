@@ -27,7 +27,7 @@
       </el-table-column>
       <el-table-column label='广告图片' align='center'>
         <template slot-scope="scope">
-          <el-image :src='scope.row.adimg|adimg' alt="" style="width: 125px; height: 80px;"
+          <el-image :src='scope.row.adimg|adimg' alt="" style="width: 125px; height: 110px;"
             :preview-src-list='scope.row.adimg|adimgs' />
         </template>
       </el-table-column>

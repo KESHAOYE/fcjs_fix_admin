@@ -18,6 +18,7 @@ export default {
         // 开始请求登录接口
         logins(data)
           .then(res => {
+            console.log(res)
             if(res.code == 200 ){
             const result = {
               phone: data.phone,

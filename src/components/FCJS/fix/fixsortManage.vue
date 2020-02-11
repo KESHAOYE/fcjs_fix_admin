@@ -4,53 +4,29 @@
     <!-- 查询工具 -->
     <div class="toolkits">
       <el-form :inline="true">
-        <el-form-item label="是否过期">
-          <el-select placeholder="" v-model="isover" size='small'>
-            <el-option label="全部" value="0"></el-option>
-            <el-option label="未过期" value="1"></el-option>
-            <el-option label="已过期" value="2"></el-option>
-          </el-select>
+        <el-form-item label="分类名称">
+          <el-input placeholder="请输入分类名称(提供中英文模糊搜索)" v-model="sort_name" clearable></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" size="small" @click="getads">查询</el-button>
+          <el-button type="primary" size="small" @click="getfixitemsorts">查询</el-button>
         </el-form-item>
       </el-form>
-      <el-button type="primary" class="news" @click="toEditor('NEW')">添加新广告</el-button>
+      <el-button type="primary" class="news" @click="toEditor('NEW')">添加新分类</el-button>
     </div>
     <!-- 数据展示 -->
     <ftable v-loading='loading' :data='tableData' center :pageSize='pageSize' :total='count' :pageCount='pageCount'
       @current-change="handleCurrentChange" @size-change="handleSizeChange">
-      <el-table-column label="广告位" align='center'>
-        <template slot-scope="scope">
-          {{scope.row.adid|adid}}
-        </template>
       </el-table-column>
-      <el-table-column label='广告图片' align='center'>
+      <el-table-column label="分类名" align='center'>
         <template slot-scope="scope">
-          <el-image :src='scope.row.adimg|adimg' alt="" style="width: 125px; height: 80px;"
-            :preview-src-list='scope.row.adimg|adimgs' />
-        </template>
-      </el-table-column>
-      <el-table-column prop="startdue" label='开始时间' align='center'>
-        <template slot-scope="scope">
-          {{scope.row.startdue|date}}
-        </template>
-      </el-table-column>
-      <el-table-column prop="overdue" label='过期时间' align='center'>
-        <template slot-scope="scope">
-          {{scope.row.overdue|date}}
-        </template>
-      </el-table-column>
-      <el-table-column prop="overdue" label='是否显示' align='center'>
-        <template slot-scope="scope">
-          {{scope.row.isshow|isshow}}
+          {{scope.row.sort_name}}
         </template>
       </el-table-column>
       <el-table-column label="操作" width="350" align='center'>
         <template slot-scope="scope">
-          <el-button type="primary" plain @click="toEditor('CHANGE',scope.row.id)">编辑</el-button>
+          <el-button type="primary" plain @click="toEditor('CHANGE',scope.row.sort_id)">编辑</el-button>
           <el-popconfirm confirmButtonText='好的' cancelButtonText='不用了' icon="el-icon-info" iconColor="red"
-            title="确定删除吗(不显示)？" @onConfirm='deleteads(scope.row.id)'>
+            title="确定删除吗(不显示)？" @onConfirm='deletefixitemsorts(scope.row.fixitemsort_id)'>
             <el-button type="danger" plain slot="reference" style="margin-left:20px">删除</el-button>
           </el-popconfirm>
         </template>
@@ -62,15 +38,14 @@
 <script>
   import ftable from '../util/table'
   import {
-    getad,
-    deletead
+    getfixitemsort,
+    deletefixitemsort
   } from '@/api/api'
   import { mapState, mapActions } from 'vuex'
   export default {
     data() {
       return {
-        adid: 1,
-        isover: '0',
+        sort_name: '',
         tableData: [],
         pageSize: 5,
         currentPage: 1,
@@ -83,28 +58,12 @@
       ftable
     },
     filters: {
-      adid(val) {
-        return {
-          1: '首页轮播图',
-          2: '商品推荐'
-        } [val]
-      },
-      adimg(val) {
-        return `http://localhost:3000${val}`
-      },
-      adimgs(val) {
-        return [`http://localhost:3000${val}`]
-      },
       isshow(val) {
         return {
           1: '是',
           0: '否'
         } [val]
       },
-      date(val) {
-        let reg = new RegExp(/^\d+-\d+-\d+/)
-        return reg.exec(val)[0]
-      }
     },
     computed: {
     ...mapState('d2admin/user', [
@@ -112,18 +71,14 @@
     ])
   },
     methods: {
-            ...mapActions('d2admin/page', [
-		  'close',
-		]),
-      getads() {
+      getfixitemsorts() {
         this.loading = true
         const qdata = {
-          adid: this.adid,
-          isover: this.isover,
+          sort_name: this.sort_name,
           pageSize: this.pageSize,
           page: this.currentPage
         }
-        getad(qdata)
+        getfixitemsort(qdata)
           .then(data => {
             if (data.code == 200) {
               this.tableData = data.info
@@ -140,27 +95,24 @@
           })
       },
       toEditor(type,id){
-        this.$router.push({name:'adEditor',query:{id,id,type:type}})
-        let tagName = this.current
-    this.close({tagName});
+        this.$router.push({name:'fixsortsEditor',query:{id,id,type:type}})
       },
       ...mapActions('d2admin/account', [
         'logout'
       ]),
-      deleteads(id) {
+      deletefixitemsorts(id) {
         this.loading = true
         const qdata = {
-          id: id,
-          phone:this.info.phone
+          sort_id: id,
         }
-        deletead(qdata)
+        deletefixitemsort(qdata)
           .then(data => {
             if (data.code == 200) {
               this.$message({
                 message: data.message,
                 type: 'success'
               })
-              this.getads()
+              this.getfixitemsorts()
             } else {
               this.$message({
                 message: data.message,
@@ -177,15 +129,15 @@
       },
       handleCurrentChange(el) {
         this.currentPage = el
-        this.getads()
+        this.getfixitemsorts()
       },
       handleSizeChange(el) {
         this.pageSize = el;
-        this.getads()
+        this.getfixitemsorts()
       }
     },
     created() {
-      this.getads()
+      this.getfixitemsorts()
     }
   }
 

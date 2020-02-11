@@ -51,7 +51,7 @@
       </el-table-column>
     </ftable>
     <span class="title">属性组合及库存</span>
-    <el-button type="primary" style="margin-top:20px;" @click="open">添加组合</el-button> 
+    <el-button type="primary" style="margin-top:20px;" @click="open('NEW')">添加组合</el-button> 
     <ftable v-loading='loading' :data='tableDatas' center :pageSize='pageSize' :total='count' :pageCount='pageCount'
       @current-change="handleCurrentChange" @size-change="handleSizeChange" style="margin-top:20px;">
       <el-table-column label="属性值" align='center'>

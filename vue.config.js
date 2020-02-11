@@ -29,7 +29,6 @@ module.exports = {
   publicPath:'/',
   lintOnSave: true,
   devServer: {
-    host:"127.0.0.1",
     port:7000,
     proxy:{
       '/api':{

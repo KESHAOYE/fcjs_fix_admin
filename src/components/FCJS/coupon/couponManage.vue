@@ -4,53 +4,69 @@
     <!-- 查询工具 -->
     <div class="toolkits">
       <el-form :inline="true">
-        <el-form-item label="是否过期">
-          <el-select placeholder="" v-model="isover" size='small'>
-            <el-option label="全部" value="0"></el-option>
-            <el-option label="未过期" value="1"></el-option>
-            <el-option label="已过期" value="2"></el-option>
+        <el-form-item label="优惠券类型">
+          <el-select v-model="coupon_sort">
+            <el-option label="全部" value='all'>全部</el-option>
+              <el-option label="全平台无门槛" value='0'>全平台</el-option>
+              <el-option label="仅限某商品" value=1></el-option>
+              <el-option label="仅限某分类" value=2></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" size="small" @click="getads">查询</el-button>
+          <el-button type="primary" size="small" @click="getcoupons">查询</el-button>
         </el-form-item>
       </el-form>
-      <el-button type="primary" class="news" @click="toEditor('NEW')">添加新广告</el-button>
+      <el-button type="primary" class="news" @click="toEditor('NEW')">添加新优惠券</el-button>
     </div>
     <!-- 数据展示 -->
     <ftable v-loading='loading' :data='tableData' center :pageSize='pageSize' :total='count' :pageCount='pageCount'
       @current-change="handleCurrentChange" @size-change="handleSizeChange">
-      <el-table-column label="广告位" align='center'>
+      </el-table-column>
+      <el-table-column label="名称" align='center'>
         <template slot-scope="scope">
-          {{scope.row.adid|adid}}
+          {{scope.row.note}}
         </template>
       </el-table-column>
-      <el-table-column label='广告图片' align='center'>
+      <el-table-column label="金额" align='center'>
         <template slot-scope="scope">
-          <el-image :src='scope.row.adimg|adimg' alt="" style="width: 125px; height: 80px;"
-            :preview-src-list='scope.row.adimg|adimgs' />
+          {{scope.row.amount}}
         </template>
       </el-table-column>
-      <el-table-column prop="startdue" label='开始时间' align='center'>
+      <el-table-column  label='使用门槛' align='center'>
         <template slot-scope="scope">
-          {{scope.row.startdue|date}}
+          {{scope.row.min_price}}
         </template>
       </el-table-column>
-      <el-table-column prop="overdue" label='过期时间' align='center'>
+      <el-table-column  label='开始使用时间' align='center'>
         <template slot-scope="scope">
-          {{scope.row.overdue|date}}
+          {{scope.row.start_time|date}}
         </template>
       </el-table-column>
-      <el-table-column prop="overdue" label='是否显示' align='center'>
+      <el-table-column  label='结束使用时间' align='center'>
         <template slot-scope="scope">
-          {{scope.row.isshow|isshow}}
+          {{scope.row.over_time|date}}
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="350" align='center'>
+      <el-table-column  label='截止领取时间' align='center'>
         <template slot-scope="scope">
-          <el-button type="primary" plain @click="toEditor('CHANGE',scope.row.id)">编辑</el-button>
+          {{scope.row.get_date|date}}
+        </template>
+      </el-table-column>
+      <el-table-column  label='发行数量' align='center'>
+        <template slot-scope="scope">
+          {{scope.row.public_count}}
+        </template>
+      </el-table-column>
+      <el-table-column  label='已领取数量' align='center'>
+        <template slot-scope="scope">
+          {{scope.row.receive_count}}
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="250" align='center' fixed="right">
+        <template slot-scope="scope">
+          <el-button type="primary" plain @click="toEditor('CHANGE',scope.row.coupon_id,scope.row.use_type)">编辑</el-button>
           <el-popconfirm confirmButtonText='好的' cancelButtonText='不用了' icon="el-icon-info" iconColor="red"
-            title="确定删除吗(不显示)？" @onConfirm='deleteads(scope.row.id)'>
+            title="确定删除吗(不显示)？" @onConfirm='deletecoupons(scope.row.coupon_id)'>
             <el-button type="danger" plain slot="reference" style="margin-left:20px">删除</el-button>
           </el-popconfirm>
         </template>
@@ -62,15 +78,14 @@
 <script>
   import ftable from '../util/table'
   import {
-    getad,
-    deletead
+    getcoupon,
+    deletecoupon
   } from '@/api/api'
   import { mapState, mapActions } from 'vuex'
   export default {
     data() {
       return {
-        adid: 1,
-        isover: '0',
+        coupon_sort: 'all',
         tableData: [],
         pageSize: 5,
         currentPage: 1,
@@ -83,18 +98,6 @@
       ftable
     },
     filters: {
-      adid(val) {
-        return {
-          1: '首页轮播图',
-          2: '商品推荐'
-        } [val]
-      },
-      adimg(val) {
-        return `http://localhost:3000${val}`
-      },
-      adimgs(val) {
-        return [`http://localhost:3000${val}`]
-      },
       isshow(val) {
         return {
           1: '是',
@@ -112,18 +115,14 @@
     ])
   },
     methods: {
-            ...mapActions('d2admin/page', [
-		  'close',
-		]),
-      getads() {
+      getcoupons() {
         this.loading = true
         const qdata = {
-          adid: this.adid,
-          isover: this.isover,
+          sort: this.coupon_sort,
           pageSize: this.pageSize,
           page: this.currentPage
         }
-        getad(qdata)
+        getcoupon(qdata)
           .then(data => {
             if (data.code == 200) {
               this.tableData = data.info
@@ -139,28 +138,28 @@
               })
           })
       },
-      toEditor(type,id){
-        this.$router.push({name:'adEditor',query:{id,id,type:type}})
-        let tagName = this.current
-    this.close({tagName});
+            ...mapActions('d2admin/page', [
+		  'close',
+		]),
+      toEditor(type,id,use_type){
+        this.$router.push({name:'couponEditor',query:{id,id,type:type,use_type:use_type}})
       },
       ...mapActions('d2admin/account', [
         'logout'
       ]),
-      deleteads(id) {
+      deletecoupons(id) {
         this.loading = true
         const qdata = {
-          id: id,
-          phone:this.info.phone
+          coupon_id: id,
         }
-        deletead(qdata)
+        deletecoupon(qdata)
           .then(data => {
             if (data.code == 200) {
               this.$message({
                 message: data.message,
                 type: 'success'
               })
-              this.getads()
+              this.getcoupons()
             } else {
               this.$message({
                 message: data.message,
@@ -177,15 +176,15 @@
       },
       handleCurrentChange(el) {
         this.currentPage = el
-        this.getads()
+        this.getcoupons()
       },
       handleSizeChange(el) {
         this.pageSize = el;
-        this.getads()
+        this.getcoupons()
       }
     },
     created() {
-      this.getads()
+      this.getcoupons()
     }
   }
 

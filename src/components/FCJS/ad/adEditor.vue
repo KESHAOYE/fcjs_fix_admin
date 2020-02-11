@@ -20,10 +20,10 @@
           end-placeholder="结束日期">
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="对应商品">
+      <el-form-item label="对应商品" v-if="form.adid == 2">
         <el-input placeholder="点击选择商品" @focus="openshop" style="width:350px;" v-model="shopname"></el-input>
       </el-form-item>
-      <el-form-item label="广告描述">
+      <el-form-item label="广告描述" v-if="form.adid == 2">
         <el-input placeholder="输入商品描述" style="width:350px;" v-model="form.shopres"></el-input>
       </el-form-item>
       <el-form-item align='center'>
@@ -69,7 +69,6 @@
         this.shopname = data.shopname 
       },
       openshop(){
-        console.log(111);
         this.$refs.shopchoose.open()
       },
       getad(res){
@@ -219,7 +218,7 @@
 
   .avatar {
     width: 250px;
-    height: 150px;
+    height: 250px;
     display: block;
   }
 
