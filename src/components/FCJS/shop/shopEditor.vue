@@ -337,13 +337,10 @@
         this.imageUrl = URL.createObjectURL(file.raw);
       },
       beforeAvatarUpload(file) {
-        const isJPG = file.type === 'image/jpeg';
-        const isLt2M = file.size / 1024 / 1024 < 2;
+        const isLt2M = file.size / 1024 / 1024 < 10;
 
-        if (!isJPG) {
-          this.$message.error('上传头像图片只能是 JPG 格式!');
-        } else if (!isLt2M) {
-          this.$message.error('上传头像图片大小不能超过 2MB!');
+        if(!isLt2M) {
+          this.$message.error('上传头像图片大小不能超过 10MB!');
         } else {
           let files = new FileReader();
           files.readAsDataURL(file)
@@ -352,7 +349,7 @@
             this.form.shopimg.push({imgid:'',path:imgFile})
           }
         }
-        return isJPG && isLt2M;
+        return isLt2M;
       }
     }
   }

@@ -4,7 +4,9 @@ export default {
       // 是否连接
       status: false,
       // 对方用户名或连接状态
-      chathead: '',
+      chathead: '无连接',
+      chatInfo:[],
+      userinfo:{}
     },
     mutations: {
       /**
@@ -13,6 +15,15 @@ export default {
        */
       changeState (state,data) {
         state.status = data
+      },
+      clean(state){
+        state.chatInfo = []
+      },
+      add(state,data){
+       state.chatInfo.push(data)
+      },
+      changeUserinfo(state,data){
+        state.userinfo = data
       },
       /**
        * @description 设置用户名 或者 状态

@@ -79,3 +79,22 @@ export const addfixmodel = data => post('/api/fixmodel/ADDMODEL',data)
  export const deletecoupon = data => post('/api/coupon/DELETECOUPON',data)
  export const updatecoupon = data => post('/api/coupon/UPDATECOUPON',data)
  export const addcoupon = data => post('/api/coupon/ADDCOUPON',data)
+
+ // 收款账号管理
+ export const getreceive = data => post('/api/receive/GETRECEIVE',data)
+ export const addreceive = data => post('/api/receive/ADDRECEIVE',data)
+ export const deletereceive = data => post('/api/receive/DELETERECEIVE',data)
+
+ //订单管理
+ export const getuserorder = data=>post('/api/order/GETUSERORDER',data)
+ export const getundeliver = data => post('/api/order/GETUNDELIVER',data)
+ export const getunfix = data => post('/api/order/GETUNFIX',data)
+ export const getorderdetail = data=>post('/api/order/GETORDERDETAIL',data)
+ export const getordershop = data => post('/api/order/GETORDERSHOP',data)
+ export const send = data => post('/api/order/SEND',data)
+ export const getcenterorderinfo = data => post('/api/order/GETCENTERORDERINFO',data)
+ export const getuseraftersail = data => post('/api/aftersail/GETUSERAFTERSAIL',data)
+ export const aftersaildetail = data => post('/api/aftersail/AFTERSAILDETAIL',data)
+ export const agreeaftersail = data => post('/api/aftersail/AGREEAFTERSAIL',data)
+ export const getfixorderdetail = data => post('/api/order/GETFIXORDERDETAIL',data)
+ export const waitfix = data => post('/api/order/WAITFIX',data)

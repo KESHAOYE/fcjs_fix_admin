@@ -227,6 +227,70 @@ const frameIn = [
         },
         component: ()=>import('../components/FCJS/coupon/couponEditor')
       },
+      {
+        path:'/setBank',
+        name: 'setBank',
+        meta: {
+          title: '收款账号配置',
+          auth: true,
+          cache: true
+        },
+        component: ()=>import('../components/FCJS/receive/receiveManage')
+      },
+      {
+        path:'/receiveEditor',
+        name: 'receiveEditor',
+        meta: {
+          title: '收款账号添加',
+          auth: true,
+          cache: true
+        },
+        component: ()=>import('../components/FCJS/receive/receiveEditor')
+      },
+      {
+        path:'/deliver',
+        name: 'deliver',
+        meta: {
+          title: '发货',
+          auth: true,
+          cache: true
+        },
+        component: ()=>import('../components/FCJS/order/deliver')
+      },
+      {
+        path:'/orderdetail',
+        name: 'orderdetail',
+        meta: {
+          title: '订单详情',
+          auth: true,
+          cache: true
+        },
+        component: ()=>import('../components/FCJS/order/orderdetail')
+      },
+      {
+        path:'/orderdetails',
+        name: 'orderdetails',
+        meta: {
+          title: '订单详情（具体）',
+        },
+        component: ()=>import('../components/FCJS/order/orderdetails')
+      },
+      {
+        path:'/aftersail',
+        name: 'aftersail',
+        meta: {
+          title: '售后处理',
+        },
+        component: ()=>import('../components/FCJS/order/aftersail')
+      },
+      {
+        path:'/fixOrder',
+        name: 'fixOrder',
+        meta: {
+          title: '售后订单核验',
+        },
+        component: ()=>import('../components/FCJS/fix/fixOrder')
+      },
     ]
   }
 ]

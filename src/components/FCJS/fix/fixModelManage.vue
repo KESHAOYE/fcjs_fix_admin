@@ -99,15 +99,6 @@
           .then(data => {
             if (data.code == 200) {
               this.count = data.count
-              if(data.info.length > 0){
-                let result = []
-                let a =  data.info[0].info.split(',')
-               a.forEach(el=>{
-                  el=el.replace(/\//g,',')
-                  result.push(JSON.parse(el))
-                })
-                data.info[0].info = result
-              }
               this.tableData = data.info
               this.pageCount = Math.floor((parseInt(this.count) + parseInt(this.pageSize)-1) / parseInt(this.pageSize));
               setTimeout(() => {

@@ -35,20 +35,23 @@
                 id: null,
                 phone: phone
               }
-              getuserinfo(qss).then(datas => {})
+              getuserinfo(qss).then(datas => {
+                this.connect()
+              })
             } else {
               console.log('token登录失败')
             }
           })
       }
-      this.connect()
       this.i18nHandle(this.$i18n.locale)
     },
-    mounted() {
-    },
+    mounted() {},
     computed: {
       ...mapState('d2admin/user', [
         'info'
+      ]),
+      ...mapState('d2admin/chat', [
+        'userinfo'
       ])
     },
     methods: {
@@ -60,7 +63,7 @@
         document.querySelector('html').setAttribute('lang', val)
       },
       connect() {
-        this.$store.commit('d2admin/chat/set','连接中..')
+        this.$store.commit('d2admin/chat/set', '连接中..')
         if (this.info.username && this.info.username.length > 0) {
           this.$socket.emit('connection')
           this.$socket.emit('storeClientInfo', {
@@ -68,9 +71,47 @@
             customId: this.info.username,
             type: 'ADMIN'
           })
-          console.log('聊天服务启动');
+          this.$store.commit('d2admin/chat/set', '客服服务启动,等待连接')
         }
       }
+    },
+    sockets: {
+      findUser(data) {
+        if (this.$route.path != '/chat') {
+          this.$notify({
+            title: '提示',
+            message: '与客户的会话自动建立，请前往客服中心处理',
+            type: 'success',
+            duration: 0
+          })
+        }
+        this.$store.commit('d2admin/chat/changeUserinfo',data.userinfo)
+        this.$store.commit('d2admin/chat/changeState', true)
+        this.$store.commit('d2admin/chat/set', data.userinfo.customId)
+      },
+      userDisconnect(data) {
+        if (data.clientId == this.userinfo.clientId) {
+            this.$store.commit('d2admin/chat/changeState',false)
+            this.$store.commit('d2admin/chat/set','用户掉线,闲置')
+            this.$store.commit('d2admin/chat/changeUserinfo',{})
+          }
+      },
+      sayto(data) {
+        if (this.$route.path != '/chat') {
+          this.$notify({
+            title: '提示',
+            message: `用户${data.user}向您发送了信息，请及时前往客服中心处理`,
+            type: 'success',
+            duration: 2500
+          })
+        }
+        this.$store.commit('d2admin/chat/add',data)
+      },
+      disconnect() {
+        this.$store.commit('d2admin/chat/set','断开连接')
+        this.$store.commit('d2admin/chat/changeState',false)
+        console.log("与服务器断开连接");
+      },
     }
   }
 
@@ -78,5 +119,5 @@
 
 <style lang="scss">
   @import '~@/assets/style/public-class.scss';
-
+  
 </style>
