@@ -60,8 +60,11 @@
           <el-image style="width:90px;height:90px;" :src='item.path'></el-image>
           <div class="shop_info">
             <span class="shop_name">{{item.shopname}}</span>
-            <div class="shop_choose">
+            <div class="shop_choose" v-if="type == 0">
               <span class="specs">{{item.sku|sku}}</span>
+            </div>
+            <div class="shop_choose" v-if="type == 1">
+              <div class="specs" v-for="(items,index) in item.sku" :key="index">项目：{{items.item_name}}</div>
             </div>
           </div>
           <div class="shop_price">
@@ -125,7 +128,8 @@
 <script>
   import {
     getorderdetail,
-    getordershop
+    getordershop,
+    getfixorderitem
   } from '@/api/api'
   export default {
     name: "orderdetail",
@@ -135,50 +139,60 @@
         baseinfo: [],
         payinfo: [],
         nowstate: [],
-        shopList: []
+        shopList: [],
+        type: this.$route.query.type | 0
       }
     },
     methods: {
       get() {
-        getordershop({
-            orderid: this.$route.query.orderid
-          })
-          .then(data => {
-            this.shopList = data.info
-          })
+        if (this.type == 0) {
+          getordershop({
+              'orderid': this.$route.query.orderid
+            })
+            .then(data => {
+              this.shopList = data.info
+            })
+        } else {
+          getfixorderitem({
+              'orderid': this.$route.query.orderid
+            })
+            .then(data => {
+              this.shopList = data.info
+            })
+        }
         getorderdetail({
-            order_id: this.$route.query.orderid
+            'order_id': this.$route.query.orderid
           })
           .then(data => {
             this.state = data.info.state
             this.baseinfo = data.info.baseinfo
             this.payinfo = data.info.payinfo
             this.nowstate = this.state[this.state.length - 1]
-            console.log(this.nowstate);
           })
       }
     },
     filters: {
       datewithtime(val) {
         let d = new Date(val)
-        return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();  
+        return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d
+          .getMinutes() + ':' + d.getSeconds();
       },
 
       state(val) {
         return {
-                1:'待付款',
-                2:'待维修',
-                3:'维修中',
-                41:'待商家发货',
-                42:'待用户发货(维修)',
-                5:'待收货',
-                6:'待评价',
-                7:'已完成',
-                8:'售后退货中',
-                9:'售后换货中',
-                10:'售后维修中',
-                11:'售后完成',
-            }[val]
+          1: '待付款',
+          2: '待维修',
+          3: '维修中',
+          41: '待商家发货',
+          42: '待用户发货(维修)',
+          5: '待收货',
+          6: '待评价',
+          7: '已完成',
+          8: '售后退货中',
+          9: '售后换货中',
+          10: '售后维修中',
+          11: '售后完成',
+        } [val]
       },
       area(val) {
         val = JSON.parse(val)
@@ -203,9 +217,9 @@
       }
     },
     watch: {
-        '$route'(val){
-          this.get()
-        }
+      '$route'(val) {
+        this.get()
+      }
     },
     mounted() {
       this.get()
@@ -500,10 +514,11 @@
           .shop_choose {
             margin-top: 25px;
             display: flex;
-            flex-flow: row wrap;
+            flex-flow: column wrap;
             font-size: 0.8em;
             margin-left: 30px;
             justify-content: space-between;
+            align-items: flex-start;
 
             .specs {
               font-weight: bolder;

@@ -115,7 +115,8 @@
         this.$router.push({
           name: "orderdetails",
           query: {
-            orderid: item.order_id
+            orderid: item.order_id,
+            type: item.order_type
           }
         })
       },

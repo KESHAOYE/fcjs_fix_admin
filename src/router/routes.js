@@ -291,6 +291,14 @@ const frameIn = [
         },
         component: ()=>import('../components/FCJS/fix/fixOrder')
       },
+      {
+        path:'/feedback',
+        name: 'feedback',
+        meta: {
+          title: '维修反馈',
+        },
+        component: ()=>import('../components/FCJS/fix/feedback')
+      },
     ]
   }
 ]
